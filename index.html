@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+</head>
+<body>
+
+<ul id="wikielem"></ul>
+
+
+
+<!--
+Resources:
+
+https://learn.jquery.com/ajax/working-with-jsonp/
+https://www.sitepoint.com/jsonp-examples/
+https://www.programmableweb.com/api/tube-updates
+
+https://www.programmableweb.com/category/all/apis?page=3&keyword=jsonp
+
+just do flickr
+
+https://www.sitepoint.com/load-flickr-photos-using-jsonapi/
+
+
+
+
+-->
+
+<script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+<script>
+
+
+    function anotherFunction() {
+        var cityVal = "Memphis";
+        var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + cityVal + '&format=json';
+//    urlType: "jsonp",
+        var jqxhr = $.ajax({
+            url: wikiUrl,
+            dataType: "jsonp"
+        })
+                .done(function () {
+                    console.log("success ", wikiUrl);
+                })
+                .fail(function () {
+                    console.log("error ", wikiUrl);
+                })
+                .always(function () {
+                    console.log("complete ", wikiUrl);
+                });
+        // Perform other work here ...
+        // Set another completion function for the request above
+        jqxhr.always(function () {
+            console.log("second complete");
+        });
+    }
+    //anotherFunction();
+    //udacityForumCode();
+
+    udacityForumCodeCleaner();
+
+    function udacityForumCode(){
+        var cityStr = "Memphis";
+
+        //load wiki links
+        var wikiRequestTimeout=setTimeout(function(){
+            //$wikiHeaderElem.text("failed to load wikipedia resources");
+            console.log("timeout");
+        },5000);
+        var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + cityStr + '&format=json&callback=wikiCallback';
+
+        $.ajax({
+            url:wikiUrl,
+            //dataType: "jsonp",
+            success: function(response){
+                var articleList = response[1];
+                console.log("response = ", response);
+                for (var i = 0; i<articleList.length; i++) {
+                    articleStr = articleList[i];
+                    console.log(articleStr);
+                };
+            }
+
+        });
+//                //clearTimeout(wikiRequestTimeout);
+//            }
+//        });
+    }
+
+
+
+    // If datatype: jsonp is not included, I get the error:
+
+    // XMLHttpRequest cannot load https://en.wikipedia.org/w/api.php?action=opensearch&search=Memphis&format=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://localhost:63343' is therefore not allowed access.
+
+    function udacityForumCodeCleaner(){
+
+        var wikipediaEndPointUrl = 'https://en.wikipedia.org/w/api.php';
+        var cityStr = 'Memphis';
+
+        var $wikiElem = $('#wikielem');
+
+        $.ajax({
+            url: wikipediaEndPointUrl,
+            data: {
+                "action": "opensearch",
+                "search": cityStr,
+                "format": "json",
+            },
+            dataType: "jsonp",
+            success: function (response) {
+                console.log(response);
+                linkDisplays = response[1];
+                links = response[3];
+                var articles = [];
+                for (var index = 0; index < response[1].length; index++) {
+                    articles.push(
+                            "<li><a href=" + '"' + links[index] + '"' + ">" + linkDisplays[index] + "</a></li>");
+                }
+                $wikiElem.append(articles);
+                //clearTimeout(wikiRequestTimeout);
+            }
+        });
+    }
+
+
+</script>
+</body>
+</html>
